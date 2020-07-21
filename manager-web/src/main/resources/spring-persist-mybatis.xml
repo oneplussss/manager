@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 加载外部属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="username" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="driverClassName" value="${jdbc.driver}"/>
+	</bean>
+	
+	<!-- 配置SqlSessionFactoryBean整合MyBatis -->
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 指定MyBatis全局配置文件位置 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		
+		<!-- 指定Mapper.xml配置文件位置 -->
+		<property name="mapperLocations" value="classpath:com/atguigu/mapper/*Mapper.xml"/>
+		
+		<!-- 装配数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+		
+		<!-- 配置mybatis插件,本质上是mybatis的拦截器 -->
+	<!--	<property name="plugins">
+			<array>
+				&lt;!&ndash; 配置pageHelper插件 &ndash;&gt;
+				<bean class="com.github.pagehelper.PageHelper">
+					&lt;!&ndash; 配置该对象的属性 &ndash;&gt;
+					<property name="properties">
+						<props>
+							&lt;!&ndash; 配置数据库方言，即告知是什么数据库 &ndash;&gt;
+							<prop key="dialect">mysql</prop>
+							&lt;!&ndash; 设置页码合理化修正：例如 本来页数是1-20但是用户输入50则被认为是到最后一页 &ndash;&gt;
+							<prop key="reasonable">true</prop>
+						</props>
+					</property>
+
+				</bean>
+
+			</array>
+
+		</property>-->
+	</bean>
+	
+	<!-- 配置MapperScannerConfigurer来扫描Mapper接口所在的包 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.atguigu.mapper"/>
+	</bean>
+</beans>
